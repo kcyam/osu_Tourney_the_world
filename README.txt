@@ -19,3 +19,4 @@ Since this uses osu!'s API to fetch current data, it is currently not possible t
 
 Created by Kenneth Yam
 test.py by Jimmy Zhang (help collects all flags into the directory)
+Flag designs belong to peppy.
