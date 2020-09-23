@@ -14,8 +14,7 @@ def start_gui(c):
     sg.theme('DarkTeal1')   # Color theme of window
     
     # All the stuff inside your window.
-    layout = [  [sg.Text('osu!Tourneys Flag Counter:')],
-            [sg.Button("Add Match")]
+    layout = [[sg.Button("Add Match")]
             ]
 
     #So I can make rows of flag buttons easier instead of smashing it all in layout
