@@ -8,6 +8,11 @@ To find your API key for osu, go to https://osu.ppy.sh/p/api to retrieve your AP
 
 This is version .01 of this program. There will be more quality of life fixes such as sorting matches through pp, rank, date, etc. If a new version is available, move your .db file to the newer version to keep your data.
 
+To-do:
+	add a delete button to the tables (I made mistakes on my inputs)
+	"Matches Played" is a misnomer when you add teams of players, will change soon
+	Add a sorting in the flags
+
 Since this uses osu!'s API to fetch current data, it is currently not possible to type restricted players. I may loosen this in the future, but do you really want to add banned players into your list?
 
 
