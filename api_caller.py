@@ -30,15 +30,12 @@ def call(info):
         else:
             badge_count = int(info["badges"])
     else:
-        pp_country = "NULL"
-        rank_c = "NULL"
-        rank_w = "NULL"
-        badge_count = "NULL"
+        pp_country = rank_c = rank_w = badge_count = ''
 
     if info['has_date']:
         date = datetime.date(int(info["year"]),int(info["month"]),int(info["day"]))
     else:
-        date = "NULL"
+        date = ''
 
         
     

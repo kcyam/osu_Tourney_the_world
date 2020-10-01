@@ -1,3 +1,5 @@
+#Python 3.6 seems to not work with PySide2, so use Python 3.7
+import PySide2 #necessary for PySimpleGuiQt to work
 import PySimpleGUI as sg
 import datetime
 import pycountry
@@ -78,25 +80,45 @@ def country_info(key_country,conn):
     else:
         country_abr = pycountry.countries.get(name=key_country).alpha_2
 
-    all_matches = (c.execute("SELECT * FROM opponents WHERE country = ?",(country_abr,)).fetchall())
-    unique_played = c.execute("SELECT count (DISTINCT osu_id) FROM opponents WHERE country = ?",(country_abr,)).fetchone()[0]
-    matches_played = c.execute("SELECT count (*) FROM opponents WHERE country = ?",(country_abr,)).fetchone()[0]
-    total_wins = c.execute("SELECT count (*) FROM opponents WHERE country = ? AND win = '1'",(country_abr,)).fetchone()[0]
+    all_matches = (c.execute("""SELECT * FROM opponents
+                                WHERE country = ?""",(country_abr,)).fetchall())
+    unique_played = c.execute("""SELECT count (DISTINCT osu_id) FROM opponents
+                                WHERE country = ?""",(country_abr,)).fetchone()[0]
+    matches_played = c.execute("""SELECT count (*) FROM opponents
+                                WHERE country = ?""",(country_abr,)).fetchone()[0]
+    total_wins = c.execute("""SELECT count (*) FROM opponents
+                                WHERE country = ? AND win = '1'""",(country_abr,)).fetchone()[0]
 
     #this will be really hard to remember later, so just look at the database order
     for match in all_matches:
         data.append([match[0],match[1],match[4],match[5],match[6],match[3],
-                     ("{} - {}".format(match[10],match[11])),match[8],match[9],match[7],gamemode(match[13])])
+                     ("{} - {}".format(match[10],match[11])),match[8],match[9],
+                     match[7],gamemode(match[13])])
 
     layout_c = [[sg.Text(key_country, font=32),
                      sg.Text("RANK: {}".format(change_color(key_country,c)+ " Belt"),font = 18)],
                 [sg.Text("Matches played: {}".format(matches_played)),sg.Text("Wins: {}".format(total_wins))],
                 [sg.Text("People played: {}".format(unique_played))],
-                [sg.Table(values=data,headings=table_col)]]
+                [sg.Table(values=data,headings=table_col,key='table')],
+                [sg.T('Selected Row: None ', key='sr')],
+                [sg.Button('Delete Match',key="delete")]]
     
     if does_country_exist(key_country):
         win3 = sg.Window(key_country,layout_c)
-        event3, values3 = win3.read()
+        
+        while True:
+            event3, values3 = win3.read()
+            print(event3)
+            if event3 == 'delete':
+                selected_row = values3["table"][0]
+                print(win3.FindElement('table').Get()[selected_row])
+                #selected_row = sg
+                
+                #win3.Element('sr').Update('Selected Row: %s' % sg.Table.Get())
+
+            else:
+                break
+
 
 def gamemode(num):
     #Takes number and translates to gamemode

@@ -62,7 +62,7 @@ def start_sql():
 
     return conn
 
-def add_data(conn,info,values):
+def change_data(conn,info,values):
     conn.cursor().execute(info,values)
     conn.commit()
 
