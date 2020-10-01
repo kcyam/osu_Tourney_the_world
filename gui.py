@@ -196,7 +196,7 @@ def call_sql(values2,event2,window,conn):
     user_data = api_caller.call(values2)
 
     if user_data != None:       
-        sql_handler.add_data(conn,
+        sql_handler.change_data(conn,
             """INSERT INTO opponents VALUES (:username,:osu_id,:country,
             :badges, :pp, :rank_world,:rank_country, :date,
             :team_name, :tourney_name, :my_score,:their_score,:win, :mode)""",
