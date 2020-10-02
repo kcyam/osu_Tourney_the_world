@@ -91,6 +91,7 @@ def country_info(key_country,conn):
 
     #this will be really hard to remember later, so just look at the database order
     for match in all_matches:
+        print("fetched", match)
         data.append([match[0],match[1],match[4],match[5],match[6],match[3],
                      ("{} - {}".format(match[10],match[11])),match[8],match[9],
                      match[7],gamemode(match[13])])
@@ -111,10 +112,9 @@ def country_info(key_country,conn):
             print(event3)
             if event3 == 'delete':
                 selected_row = values3["table"][0]
-                print(win3.FindElement('table').Get()[selected_row])
-                #selected_row = sg
-                
-                #win3.Element('sr').Update('Selected Row: %s' % sg.Table.Get())
+                user_data = win3.FindElement('table').Get()[selected_row]
+                #print(user_data)
+                delete_sql(user_data,country_abr,win3,conn)
 
             else:
                 break
@@ -122,6 +122,7 @@ def country_info(key_country,conn):
 
 def gamemode(num):
     #Takes number and translates to gamemode
+    #added kind of a lazy thing to convert back
     if num == 0:
         return "Standard"
     elif num == 1:
@@ -129,7 +130,15 @@ def gamemode(num):
     elif num == 2:
         return "Catch"
     elif num == 3:
-        return "Mania"    
+        return "Mania"
+    elif num == "Standard":
+        return 0
+    elif num == "Taiko":
+        return 1
+    elif num == "Catch":
+        return 2
+    elif num == "Mania":
+        return 3 
 
 def pop_up(window, conn):
        
@@ -195,6 +204,7 @@ def call_sql(values2,event2,window,conn):
     c = conn.cursor()
     user_data = api_caller.call(values2)
 
+
     if user_data != None:       
         sql_handler.change_data(conn,
             """INSERT INTO opponents VALUES (:username,:osu_id,:country,
@@ -226,7 +236,58 @@ def call_sql(values2,event2,window,conn):
             update_background(window,country_full.name,c)
     else:
         sg.popup('Error', "Invalid Player")
-        
+
+def delete_sql(user_data,country_abr,window,conn):
+    #Deletes highlighted row in country window
+    c = conn.cursor()
+    #THIS IS GONNA LOOK REAL UGLY
+    scores = user_data[6].split(" - ")
+    '''
+    sql_handler.change_data(conn,
+            """DELETE FROM opponents WHERE username IN(
+            SELECT username FROM opponents WHERE
+            username = :username AND
+            osu_id = :osu_id AND country = :country AND badges = :badges AND pp = :pp
+            AND rank_world = :rank_world AND rank_country = :rank_country AND date = :date
+            AND team_name = :team_name AND tourney_name = :tourney_name
+            AND my_score = :my_score AND their_score = :their_score
+            AND mode = :mode LIMIT 1)""",
+            {'username':user_data[0],
+            'osu_id':user_data[1],'country':country_abr,
+            'badges':user_data[5],'pp':user_data[2],
+            'rank_world':user_data[3],'rank_country':user_data[4],
+            'date':user_data[9],'team_name':user_data[7],
+            'tourney_name':user_data[8],'my_score':int(scores[0]),
+            'their_score':int(scores[1]),'mode':user_data[10]})
+
+    '''
+    print("MODE", user_data[10])
+    
+    a = conn.cursor().execute(
+            """DELETE FROM opponents WHERE rowid IN (SELECT rowid FROM opponents WHERE(
+            username = :username AND
+            osu_id = :osu_id AND country = :country AND badges = :badges AND pp = :pp
+            AND rank_world = :rank_world AND rank_country = :rank_country AND date = :date
+            AND team_name = :team_name AND tourney_name = :tourney_name
+            AND my_score = :my_score AND their_score = :their_score
+            AND mode = :mode)LIMIT 1)""",
+            {'username':user_data[0],
+            'osu_id':user_data[1],'country':country_abr,
+            'badges':user_data[5],'pp':user_data[2],
+            'rank_world':user_data[3],'rank_country':user_data[4],
+            'date':user_data[9],'team_name':user_data[7],
+            'tourney_name':user_data[8],'my_score':int(scores[0]),
+            'their_score':int(scores[1]),'mode':gamemode(user_data[10])})
+    conn.commit()
+
+    #print(a.fetchall())
+    #a = conn.cursor().execute(
+    #    """DELETE FROM opponents WHERE username = 'peppy';""")
+    
+
+def update_sql():
+    #this will allow users to change a certain row's information
+    pass
         
 #AN: Netherland Antilles split up, but transitionally reserved        
 #AP: Does not exist

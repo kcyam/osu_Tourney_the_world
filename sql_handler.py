@@ -52,7 +52,7 @@ def start_sql():
                             tourney_name text NOT NULL,
                             my_score integer NOT NULL,
                             their_score integer NOT NULL,
-                            win text NOT NULL,
+                            win text NOT NULL,                    
                             mode integer NOT NULL
                         )"""
 
