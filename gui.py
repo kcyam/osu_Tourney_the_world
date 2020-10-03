@@ -98,7 +98,7 @@ def country_info(key_country,conn):
         #this will be really hard to remember later, so just look at the database order
 
         for match in all_matches:
-            print("fetched", match)
+            #print("fetched", match)
             data.append([match[0],match[1],match[4],match[5],match[6],match[3],
                          ("{} - {}".format(match[10],match[11])),match[8],match[9],
                          match[7],gamemode(match[13])])
@@ -116,19 +116,22 @@ def country_info(key_country,conn):
             win3 = sg.Window(key_country,layout_c)
             
             #if test_bool:
+            win3.refresh()
             event3, values3 = win3.read()
                 #test_bool = False
                 
                 
             #print(event3)
             if event3 == 'delete':
-                selected_row = values3["table"][0]
-                user_data = win3.FindElement('table').Get()[selected_row]
-                #print(user_data)
-                delete_sql(user_data,country_abr,win3,conn)
-                close_gui(win3)
+                if values3['table'] != []:
+                    selected_row = values3["table"][0]
+                    user_data = win3.FindElement('table').Get()[selected_row]
+                    #print(user_data)
+                    delete_sql(user_data,country_abr,win3,conn)
+                    #close_gui(win3)
                 win3['table'].Update(values=None)
                 win3.close()
+                
 
             else:
                 break
@@ -275,7 +278,6 @@ def delete_sql(user_data,country_abr,window,conn):
             'their_score':int(scores[1]),'mode':user_data[10]})
 
     '''
-    print("MODE", user_data[10])
     
     a = conn.cursor().execute(
             """DELETE FROM opponents WHERE rowid IN (SELECT rowid FROM opponents WHERE(
