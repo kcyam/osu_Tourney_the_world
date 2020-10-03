@@ -80,41 +80,55 @@ def country_info(key_country,conn):
     else:
         country_abr = pycountry.countries.get(name=key_country).alpha_2
 
-    all_matches = (c.execute("""SELECT * FROM opponents
-                                WHERE country = ?""",(country_abr,)).fetchall())
-    unique_played = c.execute("""SELECT count (DISTINCT osu_id) FROM opponents
-                                WHERE country = ?""",(country_abr,)).fetchone()[0]
-    matches_played = c.execute("""SELECT count (*) FROM opponents
-                                WHERE country = ?""",(country_abr,)).fetchone()[0]
-    total_wins = c.execute("""SELECT count (*) FROM opponents
-                                WHERE country = ? AND win = '1'""",(country_abr,)).fetchone()[0]
+    #test if I wanna put the while loop here
+    test_bool = True
+    while True:
+        data = []
+        layout_c = []
 
-    #this will be really hard to remember later, so just look at the database order
-    for match in all_matches:
-        print("fetched", match)
-        data.append([match[0],match[1],match[4],match[5],match[6],match[3],
-                     ("{} - {}".format(match[10],match[11])),match[8],match[9],
-                     match[7],gamemode(match[13])])
+        all_matches = (c.execute("""SELECT * FROM opponents
+                                    WHERE country = ?""",(country_abr,)).fetchall())
+        unique_played = c.execute("""SELECT count (DISTINCT osu_id) FROM opponents
+                                    WHERE country = ?""",(country_abr,)).fetchone()[0]
+        matches_played = c.execute("""SELECT count (*) FROM opponents
+                                    WHERE country = ?""",(country_abr,)).fetchone()[0]
+        total_wins = c.execute("""SELECT count (*) FROM opponents
+                                    WHERE country = ? AND win = '1'""",(country_abr,)).fetchone()[0]
 
-    layout_c = [[sg.Text(key_country, font=32),
-                     sg.Text("RANK: {}".format(change_color(key_country,c)+ " Belt"),font = 18)],
-                [sg.Text("Matches played: {}".format(matches_played)),sg.Text("Wins: {}".format(total_wins))],
-                [sg.Text("People played: {}".format(unique_played))],
-                [sg.Table(values=data,headings=table_col,key='table')],
-                [sg.T('Selected Row: None ', key='sr')],
-                [sg.Button('Delete Match',key="delete")]]
-    
-    if does_country_exist(key_country):
-        win3 = sg.Window(key_country,layout_c)
+        #this will be really hard to remember later, so just look at the database order
+
+        for match in all_matches:
+            print("fetched", match)
+            data.append([match[0],match[1],match[4],match[5],match[6],match[3],
+                         ("{} - {}".format(match[10],match[11])),match[8],match[9],
+                         match[7],gamemode(match[13])])
+
         
-        while True:
+        layout_c = [[sg.Text(key_country, font=32),
+                         sg.Text("RANK: {}".format(change_color(key_country,c)+ " Belt"),font = 18)],
+                    [sg.Text("Matches played: {}".format(matches_played)),sg.Text("Wins: {}".format(total_wins))],
+                    [sg.Text("People played: {}".format(unique_played))],
+                    [sg.Table(values=data,headings=table_col,key='table')],
+                    [sg.T('Selected Row: None ', key='sr')],
+                    [sg.Button('Delete Match',key="delete")]]
+        
+        if does_country_exist(key_country):
+            win3 = sg.Window(key_country,layout_c)
+            
+            #if test_bool:
             event3, values3 = win3.read()
-            print(event3)
+                #test_bool = False
+                
+                
+            #print(event3)
             if event3 == 'delete':
                 selected_row = values3["table"][0]
                 user_data = win3.FindElement('table').Get()[selected_row]
                 #print(user_data)
                 delete_sql(user_data,country_abr,win3,conn)
+                close_gui(win3)
+                win3['table'].Update(values=None)
+                win3.close()
 
             else:
                 break
@@ -278,12 +292,7 @@ def delete_sql(user_data,country_abr,window,conn):
             'date':user_data[9],'team_name':user_data[7],
             'tourney_name':user_data[8],'my_score':int(scores[0]),
             'their_score':int(scores[1]),'mode':gamemode(user_data[10])})
-    conn.commit()
-
-    #print(a.fetchall())
-    #a = conn.cursor().execute(
-    #    """DELETE FROM opponents WHERE username = 'peppy';""")
-    
+    conn.commit()    
 
 def update_sql():
     #this will allow users to change a certain row's information

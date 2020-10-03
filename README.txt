@@ -6,7 +6,7 @@ Add a match and see the flag buttons enable.
 
 To find your API key for osu, go to https://osu.ppy.sh/p/api to retrieve your API. For some reason, it takes about a minute for it to stop redirecting you to the forums. Refresh until it works. DO NOT SHARE YOUR API WITH ANYONE ELSE!
 
-This is version .03 of this program. There will be more quality of life fixes such as sorting matches through pp, rank, date, etc. If a new version is available, move your .db file to the newer version to keep your data.
+This is version .04 of this program. There will be more quality of life fixes such as sorting matches through pp, rank, date, etc. If a new version is available, move your .db file to the newer version to keep your data.
 
 To-do:
 	add a delete button to the tables (I made mistakes on my inputs)
@@ -15,7 +15,7 @@ To-do:
 
 Since this uses osu!'s API to fetch current data, it is currently not possible to type restricted players. I may loosen this in the future, but do you really want to add banned players into your list?
 
-
+Added in v.04: Delete can be seen, but it makes a new window. I will find out how to use refresh() next patch.
 
 Created by Kenneth Yam
 test.py by Jimmy Zhang (help collects all flags into the directory)
